@@ -1,0 +1,92 @@
+<div class="container">
+  <!-- Hero Banner -->
+  <section class="hero-banner">
+    <div class="hero-content">
+      <span class="hero-tag">PORTAL OFICIAL GRUPO SEMC</span>
+      <h1>Planeje Expedições, Trilhas e Kits EDC de Sobrevivência</h1>
+      <p>
+        Central de sobrevivencialismo, catalogação de equipamentos táticos e de camping,
+        checklists de campo e rotas de acampamento mapeadas em Minas Gerais.
+      </p>
+      <div class="hero-actions">
+        <a routerLink="/catalogo" class="btn btn-primary">Explorar Catálogo & Trilhas</a>
+        <a routerLink="/gerenciar" class="btn btn-outline-light">+ Cadastrar Novo Item</a>
+      </div>
+    </div>
+
+    <div class="hero-emblem">
+      <div class="emblem-circle">
+        <span class="emblem-Main">SEMC</span>
+        <span class="emblem-sub">BASECAMP</span>
+      </div>
+      <div class="mascote-motto">"SURVIVAL IS A WAY OF LIFE!"</div>
+    </div>
+  </section>
+
+  <!-- Indicadores Dinâmicos (Data-Binding via SemcService) -->
+  <section class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-value">{{ resumo.totalEquipamentos }} Itens</span>
+      <span class="stat-label">Equipamentos Catalogados</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ resumo.totalTrilhas }} Rotas</span>
+      <span class="stat-label">Trilhas Mapeadas em MG</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ resumo.pesoTotalKitKg }} kg</span>
+      <span class="stat-label">Peso Acumulado do Inventário</span>
+    </div>
+    <div class="stat-card highlight">
+      <span class="stat-value">100% Pronto</span>
+      <span class="stat-label">Checklists Verificados SEMC</span>
+    </div>
+  </section>
+
+  <!-- Destaques do Catálogo (*ngFor e Property Binding) -->
+  <section class="section-block">
+    <div class="section-header">
+      <h2>Destaques de Equipamentos & Próximas Expedições</h2>
+      <a routerLink="/catalogo" class="link-more">Ver catálogo completo →</a>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card item-card" *ngFor="let item of destaques">
+        <div class="card-top">
+          <span class="badge" [ngClass]="item.tipo === 'Equipamento' ? 'badge-equipamento' : 'badge-trilha'">
+            {{ item.tipo }}
+          </span>
+          <span class="code-tag">#{{ item.codigo }}</span>
+        </div>
+
+        <h3>{{ item.nome }}</h3>
+        <p class="item-desc">{{ item.descricao }}</p>
+
+        <div class="item-meta">
+          <span><strong>Categoria:</strong> {{ item.categoria }}</span>
+          <span><strong>Peso:</strong> {{ item.pesoGramas }} g</span>
+          <span><strong>Criticidade:</strong> {{ item.dificuldadeOuCriticidade }}</span>
+        </div>
+
+        <div class="card-actions">
+          <a routerLink="/catalogo" class="btn btn-secondary">Ver Checklist ({{ item.checklist.length }} itens)</a>
+          <a [routerLink]="['/gerenciar', item.id]" class="btn btn-outline">Editar</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guia Rápido: Os 5 Cs da Sobrevivência -->
+  <section class="section-block">
+    <h2>Guia Rápido SEMC: Regra dos 5 Cs da Sobrevivência</h2>
+    <div class="rules-grid">
+      <div class="rule-card" *ngFor="let regra of regrasSobrevivencia">
+        <div class="rule-num">{{ regra.numero }}</div>
+        <div>
+          <h4>{{ regra.titulo }}</h4>
+          <p>{{ regra.detalhe }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

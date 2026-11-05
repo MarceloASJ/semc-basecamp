@@ -1,0 +1,59 @@
+<div class="container">
+  <section class="about-header">
+    <div>
+      <span class="badge badge-equipamento">HISTÓRIA & IDENTIDADE</span>
+      <h1>Sobre o Grupo SEMC</h1>
+      <p>
+        Nascido da amizade e da paixão pelo sobrevivencialismo, viagens, acampamentos e trilhas,
+        o grupo <strong>SEMC</strong> organiza expedições em ambientes naturais priorizando o preparo técnico,
+        a autossuficiência e o companheirismo.
+      </p>
+    </div>
+    <div class="motto-box">
+      <div class="motto-title">LEMA OFICIAL SEMC</div>
+      <div class="motto-phrase">"SURVIVAL IS A WAY OF LIFE!"</div>
+    </div>
+  </section>
+
+  <!-- Pilares -->
+  <section class="pillars-grid">
+    <div class="card pillar-card" *ngFor="let pilar of pilares">
+      <h3>{{ pilar.titulo }}</h3>
+      <p>{{ pilar.descricao }}</p>
+    </div>
+  </section>
+
+  <!-- Perfil do Integrante / Desenvolvedor e Linha do Tempo -->
+  <div class="two-col">
+    <section class="card member-box">
+      <h2>Coordenação & Desenvolvimento</h2>
+      <div class="member-profile">
+        <div class="avatar">MA</div>
+        <div>
+          <h3>Marcelo Alexandrino de Souza Junior</h3>
+          <p class="role">Fundador SEMC & Desenvolvedor Front-End Angular</p>
+          <p class="bio">
+            Estudante de Ciência da Computação na Universidade FUMEC. Responsável pela arquitetura do
+            sistema SEMC BaseCamp, prototipação no Figma e catalogação dos equipamentos e rotas de trilha do grupo.
+          </p>
+          <div class="member-links">
+            <a href="https://github.com/MarceloASJ/semc-basecamp" target="_blank" class="btn btn-secondary">
+              Repositório GitHub
+            </a>
+            <a routerLink="/catalogo" class="btn btn-primary">Ver Equipamentos do Grupo</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card timeline-box">
+      <h2>Linha do Tempo SEMC</h2>
+      <div class="timeline-list">
+        <div class="timeline-item" *ngFor="let marco of marcosHistoricos">
+          <span class="timeline-year">{{ marco.ano }}</span>
+          <p>{{ marco.evento }}</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

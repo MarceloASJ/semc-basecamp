@@ -1,0 +1,245 @@
+.hero-banner {
+  background: linear-gradient(135deg, #1b261e 0%, #233127 65%, #3a5a40 100%);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 36px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  border: 2px solid #588157;
+  margin-bottom: 24px;
+}
+
+.hero-content {
+  max-width: 760px;
+}
+
+.hero-tag {
+  display: inline-block;
+  background-color: #3a5a40;
+  color: #e9f5db;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+  letter-spacing: 0.8px;
+}
+
+.hero-content h1 {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.hero-content p {
+  color: #cbd5e1;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-outline-light {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid #a3b18a;
+  color: #ffffff;
+}
+
+.hero-emblem {
+  text-align: center;
+  min-width: 220px;
+}
+
+.emblem-circle {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: #1b261e;
+  border: 4px solid #a3b18a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.emblem-Main {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+}
+
+.emblem-sub {
+  font-size: 11px;
+  font-weight: 700;
+  color: #a3b18a;
+  letter-spacing: 2px;
+}
+
+.mascote-motto {
+  font-size: 11px;
+  font-weight: 800;
+  background: #d97706;
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-left: 6px solid #3a5a40;
+  border-radius: 10px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card.highlight {
+  border-left-color: #d97706;
+  background: #fffbeb;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.section-block {
+  margin-bottom: 36px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-block h2 {
+  font-size: 22px;
+  color: #1b261e;
+  margin-bottom: 12px;
+}
+
+.link-more {
+  color: #3a5a40;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 20px;
+}
+
+.item-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-top: 5px solid #3a5a40;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.code-tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.item-card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #1e293b;
+}
+
+.item-desc {
+  font-size: 13px;
+  color: #475569;
+  margin-bottom: 14px;
+}
+
+.item-meta {
+  background: #f8fafc;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+  color: #334155;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.rule-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.rule-num {
+  background: #233127;
+  color: #a3b18a;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.rule-card h4 {
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #1e293b;
+}
+
+.rule-card p {
+  font-size: 12px;
+  color: #475569;
+}

@@ -1,0 +1,154 @@
+<div class="container">
+  <div class="page-top">
+    <div>
+      <h1>Catálogo de Equipamentos & Rotas de Trilha</h1>
+      <p>Consulte especificações técnicas, filtre por categoria e inspecione o checklist de cada item.</p>
+    </div>
+    <a routerLink="/gerenciar" class="btn btn-primary">+ Cadastrar Equipamento / Trilha</a>
+  </div>
+
+  <!-- Alerta de Feedback (*ngIf) -->
+  <div class="alert-feedback" *ngIf="mensagemFeedback">
+    {{ mensagemFeedback }}
+  </div>
+
+  <!-- Barra de Pesquisa e Filtros (Two-Way Data Binding [(ngModel)] e Event Binding) -->
+  <div class="card filter-bar">
+    <div class="search-box">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Pesquisar por nome, código (#EQP), categoria ou local..."
+        [(ngModel)]="termoPesquisa"
+        (input)="atualizarLista()"
+      />
+    </div>
+
+    <div class="filter-buttons">
+      <button
+        type="button"
+        class="btn"
+        [ngClass]="filtroTipo === 'Todos' ? 'btn-primary' : 'btn-outline'"
+        (click)="definirFiltroTipo('Todos')"
+      >
+        Todos
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [ngClass]="filtroTipo === 'Equipamento' ? 'btn-primary' : 'btn-outline'"
+        (click)="definirFiltroTipo('Equipamento')"
+      >
+        Equipamentos EDC / Camping
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [ngClass]="filtroTipo === 'Trilha' ? 'btn-primary' : 'btn-outline'"
+        (click)="definirFiltroTipo('Trilha')"
+      >
+        Trilhas Mapeadas
+      </button>
+    </div>
+  </div>
+
+  <!-- Layout Dividido: Componente de Listagem (Esquerda) + Componente de Detalhe (Direita) -->
+  <div class="catalog-layout">
+    <!-- Coluna Esquerda: Listagem (*ngFor) -->
+    <div class="list-column">
+      <div class="empty-state card" *ngIf="itensFiltrados.length === 0">
+        <h3>Nenhum registro encontrado</h3>
+        <p>Tente ajustar os termos da pesquisa ou cadastre um novo equipamento/trilha.</p>
+      </div>
+
+      <div
+        class="card list-item-card"
+        *ngFor="let item of itensFiltrados"
+        [class.selected]="itemSelecionado?.id === item.id"
+        (click)="selecionarItem(item)"
+      >
+        <div class="list-card-header">
+          <span class="badge" [ngClass]="item.tipo === 'Equipamento' ? 'badge-equipamento' : 'badge-trilha'">
+            {{ item.tipo }}
+          </span>
+          <span class="badge badge-status">{{ item.status }}</span>
+        </div>
+
+        <h3>{{ item.nome }}</h3>
+        <p class="list-sub">Código: <strong>#{{ item.codigo }}</strong> | Categoria: {{ item.categoria }}</p>
+
+        <div class="list-footer">
+          <span class="weight-pill">Peso: {{ item.pesoGramas }} g</span>
+          <div class="list-actions">
+            <button type="button" class="btn btn-secondary btn-sm" (click)="selecionarItem(item)">
+              Inspecionar Detalhes
+            </button>
+            <a [routerLink]="['/gerenciar', item.id]" class="btn btn-outline btn-sm" (click)="$event.stopPropagation()">
+              Editar
+            </a>
+            <button
+              type="button"
+              class="btn btn-danger btn-sm"
+              (click)="excluirItem(item.id, item.nome); $event.stopPropagation()"
+            >
+              Excluir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coluna Direita: Componente de Detalhe (*ngIf) -->
+    <aside class="detail-column" *ngIf="itemSelecionado as detalhe">
+      <div class="card detail-panel">
+        <div class="detail-header">
+          <span>COMPONENTE DE DETALHE — FICHA TÉCNICA</span>
+          <span class="detail-code">#{{ detalhe.codigo }}</span>
+        </div>
+
+        <div class="detail-body">
+          <span class="badge" [ngClass]="detalhe.tipo === 'Equipamento' ? 'badge-equipamento' : 'badge-trilha'">
+            {{ detalhe.tipo }}
+          </span>
+          <h2>{{ detalhe.nome }}</h2>
+          <p class="detail-description">{{ detalhe.descricao }}</p>
+
+          <div class="specs-grid">
+            <div class="spec-box">
+              <span class="spec-label">Categoria</span>
+              <span class="spec-val">{{ detalhe.categoria }}</span>
+            </div>
+            <div class="spec-box">
+              <span class="spec-label">Peso Estimado</span>
+              <span class="spec-val">{{ detalhe.pesoGramas }} g ({{ (detalhe.pesoGramas / 1000).toFixed(2) }} kg)</span>
+            </div>
+            <div class="spec-box">
+              <span class="spec-label">Criticidade / Nível</span>
+              <span class="spec-val">{{ detalhe.dificuldadeOuCriticidade }}</span>
+            </div>
+            <div class="spec-box">
+              <span class="spec-label">Responsável / Local</span>
+              <span class="spec-val">{{ detalhe.localOuResponsavel }}</span>
+            </div>
+          </div>
+
+          <h4>Checklist Obrigatório de Campo ({{ detalhe.checklist.length }} itens):</h4>
+          <ul class="checklist-box">
+            <li *ngFor="let check of detalhe.checklist">
+              <span class="check-icon">☑</span> {{ check }}
+            </li>
+          </ul>
+
+          <div class="detail-actions">
+            <a [routerLink]="['/gerenciar', detalhe.id]" class="btn btn-primary">
+              Editar Registro
+            </a>
+            <button type="button" class="btn btn-danger" (click)="excluirItem(detalhe.id, detalhe.nome)">
+              Remover do Catálogo
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
