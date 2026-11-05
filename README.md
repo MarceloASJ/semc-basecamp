@@ -1,31 +1,27 @@
-# 🏕️ SEMC BaseCamp
+# SemcBasecamp
 
-Aplicação web desenvolvida para o grupo **SEMC**, voltada ao gerenciamento e catalogação de equipamentos de sobrevivencialismo, planejamento de acampamentos, viagens e rotas de trilhas.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
 
-Projeto desenvolvido para a disciplina de **Desenvolvimento Web Front-End** do curso de Ciência da Computação — **Universidade FUMEC** (Prof. Dângelo Silva Miranda).
+## Development server
 
-## 👤 Integrante
-* **Marcelo Alexandrino de Souza Junior**
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## 🎯 Tema
-Sobrevivencialismo, viagens, acampamentos e trilhas (Grupo SEMC).
+## Code scaffolding
 
-## 🖥️ Telas Previstas (7 Telas)
-1. **Tela Inicial (Menu):** Apresentação do portal SEMC BaseCamp, destaques de expedições, guia rápido e contato.
-2. **Tela Sobre Nós:** História do grupo SEMC, propósito, filosofia de sobrevivencialismo e perfil dos membros.
-3. **Tela de Login:** Autenticação de usuários e controle de acesso a rotas administrativas.
-4. **Tela de Cadastro de Usuário:** Formulário de registro integrado à API de CEP/DDD (ViaCEP/Correios).
-5. **Tela de Equipamentos e Trilhas (Catálogo):** Listagem de equipamentos/trilhas e visualização de detalhes (especificações técnicas, peso, dificuldade e checklist).
-6. **Tela de Cadastro de Equipamento/Trilha:** Formulário restrito para inclusão e edição de itens e rotas.
-7. **Tela de Relatórios (Dashboard):** Indicadores sobre equipamentos por categoria, trilhas por nível de dificuldade e histórico de acampamentos.
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-## ⚙️ Requisitos e Tecnologias
-* **Framework:** Angular
-* **Funcionalidades Principais:**
-  * Componentes de Listagem e Detalhe
-  * Componentes de Formulários Reativos
-  * Proteção de Rotas (`AuthGuard`) e Controle de Acesso
-  * Otimização de Desempenho com *Lazy Loading*
-  * Dashboard Gerencial de Relatórios
-  * Consumo de Web APIs (`JSON-Server` e API ViaCEP/Correios)
-* **Padrões de Versionamento:** GitFlow, Commits Atômicos e *Conventional Commits*.
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Running unit tests
+
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
