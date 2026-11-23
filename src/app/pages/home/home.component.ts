@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { ItemSemc } from '../../models/item-semc.model';
 import { SemcService } from '../../services/semc.service';
 
@@ -10,6 +10,8 @@ import { SemcService } from '../../services/semc.service';
 export class HomeComponent implements OnInit {
   destaques: ItemSemc[] = [];
   resumo = { totalEquipamentos: 0, totalTrilhas: 0, pesoTotalKitKg: 0 };
+  carregando = true;
+  erroApi = '';
 
   regrasSobrevivencia = [
     { numero: '01', titulo: 'Corte (Lâmina Full Tang)', detalhe: 'Faca principal em aço carbono 1095 para madeira, abrigo e preparo.' },
@@ -22,7 +24,23 @@ export class HomeComponent implements OnInit {
   constructor(private semcService: SemcService) {}
 
   ngOnInit(): void {
-    this.destaques = this.semcService.listarDestaques();
-    this.resumo = this.semcService.obterResumo();
+    this.semcService.listarDestaques().subscribe({
+      next: (itens: ItemSemc[]) => {
+        this.destaques = itens;
+      },
+      error: () => {
+        this.erroApi = 'Não foi possível conectar à API local (json-server em http://localhost:3000).';
+      }
+    });
+
+    this.semcService.listarTodos().subscribe({
+      next: (todos: ItemSemc[]) => {
+        this.resumo = this.semcService.calcularResumo(todos);
+        this.carregando = false;
+      },
+      error: () => {
+        this.carregando = false;
+      }
+    });
   }
 }

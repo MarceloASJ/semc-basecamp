@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ItemSemc } from '../../models/item-semc.model';
 import { SemcService } from '../../services/semc.service';
 
 @Component({
@@ -8,90 +10,123 @@ import { SemcService } from '../../services/semc.service';
   styleUrls: ['./cadastro-item.component.css']
 })
 export class CadastroItemComponent implements OnInit {
+  formItem!: FormGroup;
   idEdicao: number | null = null;
-  modoEdicao: boolean = false;
-
-  codigo: string = 'EQP-055';
-  nome: string = '';
-  tipo: 'Equipamento' | 'Trilha' = 'Equipamento';
-  categoria: string = 'Cutelaria & Fogo';
-  pesoGramas: number = 450;
-  dificuldadeOuCriticidade: 'Essencial (EDC)' | 'Moderada' | 'Difícil' | 'Leve' = 'Essencial (EDC)';
-  status: 'Disponível' | 'Em Campo' | 'Planejado' | 'Concluído' = 'Disponível';
-  localOuResponsavel: string = 'Marcelo Alexandrino de Souza Junior';
-  descricao: string = '';
-  checklistTexto: string = 'Bainha tática em Kydex\nPederneira de ferrocério\nCordame Paracord 550';
-  destaque: boolean = true;
-
-  mensagemErro: string = '';
+  modoEdicao = false;
+  enviando = false;
+  erroApi = '';
 
   constructor(
+    private fb: FormBuilder,
     private semcService: SemcService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.formItem = this.fb.group({
+      tipo: ['Equipamento', [Validators.required]],
+      codigo: ['EQP-055', [Validators.required, Validators.minLength(4)]],
+      status: ['Disponível', [Validators.required]],
+      nome: ['', [Validators.required, Validators.minLength(3)]],
+      categoria: ['Cutelaria & Fogo', [Validators.required, Validators.minLength(2)]],
+      pesoGramas: [450, [Validators.required, Validators.min(1)]],
+      dificuldadeOuCriticidade: ['Essencial (EDC)', [Validators.required]],
+      localOuResponsavel: ['Marcelo Alexandrino de Souza Junior', [Validators.required, Validators.minLength(2)]],
+      descricao: ['', [Validators.required, Validators.minLength(10)]],
+      checklistTexto: ['Bainha tática em Kydex\nPederneira de ferrocério\nCordame Paracord 550', [Validators.required]],
+      destaque: [true]
+    });
+
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       const id = Number(idParam);
-      const itemExistente = this.semcService.buscarPorId(id);
-      if (itemExistente) {
-        this.idEdicao = id;
-        this.modoEdicao = true;
-        this.codigo = itemExistente.codigo;
-        this.nome = itemExistente.nome;
-        this.tipo = itemExistente.tipo;
-        this.categoria = itemExistente.categoria;
-        this.pesoGramas = itemExistente.pesoGramas;
-        this.dificuldadeOuCriticidade = itemExistente.dificuldadeOuCriticidade;
-        this.status = itemExistente.status;
-        this.localOuResponsavel = itemExistente.localOuResponsavel;
-        this.descricao = itemExistente.descricao;
-        this.checklistTexto = itemExistente.checklist.join('\n');
-        this.destaque = itemExistente.destaque;
-      }
+      this.semcService.buscarPorId(id).subscribe({
+        next: (item: ItemSemc) => {
+          this.idEdicao = id;
+          this.modoEdicao = true;
+          this.formItem.patchValue({
+            ...item,
+            checklistTexto: item.checklist.join('\n')
+          });
+        },
+        error: () => {
+          this.erroApi = 'Não foi possível carregar os dados do item para edição.';
+        }
+      });
     }
+  }
+
+  campoInvalido(campo: string): boolean {
+    const ctrl = this.formItem.get(campo);
+    return !!(ctrl && ctrl.invalid && (ctrl.dirty || ctrl.touched));
+  }
+
+  campoValido(campo: string): boolean {
+    const ctrl = this.formItem.get(campo);
+    return !!(ctrl && ctrl.valid && (ctrl.dirty || ctrl.touched));
   }
 
   salvarFormulario(): void {
-    if (!this.nome.trim() || !this.codigo.trim() || !this.descricao.trim()) {
-      this.mensagemErro = 'Por favor, preencha todos os campos obrigatórios (Código, Nome e Descrição).';
+    if (this.formItem.invalid) {
+      this.formItem.markAllAsTouched();
       return;
     }
 
-    const listaChecklist = this.checklistTexto
-      .split('\n')
-      .map(linha => linha.trim())
-      .filter(linha => linha.length > 0);
+    this.enviando = true;
+    this.erroApi = '';
+    const v = this.formItem.value;
 
-    const dadosItem = {
-      codigo: this.codigo.trim(),
-      nome: this.nome.trim(),
-      tipo: this.tipo,
-      categoria: this.categoria.trim(),
-      pesoGramas: Number(this.pesoGramas) || 0,
-      dificuldadeOuCriticidade: this.dificuldadeOuCriticidade,
-      status: this.status,
-      localOuResponsavel: this.localOuResponsavel.trim(),
-      descricao: this.descricao.trim(),
-      checklist: listaChecklist.length > 0 ? listaChecklist : ['Item padrão verificado pelo SEMC'],
-      destaque: this.destaque
+    const listaChecklist = String(v.checklistTexto || '')
+      .split('\n')
+      .map((l: string) => l.trim())
+      .filter((l: string) => l.length > 0);
+
+    const payload: Omit<ItemSemc, 'id'> = {
+      codigo: String(v.codigo).trim(),
+      nome: String(v.nome).trim(),
+      tipo: v.tipo,
+      categoria: String(v.categoria).trim(),
+      pesoGramas: Number(v.pesoGramas),
+      dificuldadeOuCriticidade: v.dificuldadeOuCriticidade,
+      status: v.status,
+      localOuResponsavel: String(v.localOuResponsavel).trim(),
+      descricao: String(v.descricao).trim(),
+      checklist: listaChecklist.length > 0 ? listaChecklist : ['Item verificado SEMC'],
+      destaque: Boolean(v.destaque)
     };
 
-    if (this.modoEdicao && this.idEdicao !== null) {
-      this.semcService.atualizar(this.idEdicao, dadosItem);
-    } else {
-      this.semcService.cadastrar(dadosItem);
-    }
+    const requisicao$ =
+      this.modoEdicao && this.idEdicao !== null
+        ? this.semcService.atualizar(this.idEdicao, payload)
+        : this.semcService.cadastrar(payload);
 
-    this.router.navigate(['/catalogo']);
+    requisicao$.subscribe({
+      next: () => {
+        this.enviando = false;
+        this.router.navigate(['/catalogo']);
+      },
+      error: () => {
+        this.enviando = false;
+        this.erroApi = 'Erro ao salvar na Web API (verifique o json-server na porta 3000).';
+      }
+    });
   }
 
   limparCampos(): void {
-    this.nome = '';
-    this.descricao = '';
-    this.checklistTexto = '';
-    this.mensagemErro = '';
+    this.formItem.reset({
+      tipo: 'Equipamento',
+      codigo: 'EQP-060',
+      status: 'Disponível',
+      nome: '',
+      categoria: 'Cutelaria & Fogo',
+      pesoGramas: 300,
+      dificuldadeOuCriticidade: 'Essencial (EDC)',
+      localOuResponsavel: 'Marcelo Alexandrino de Souza Junior',
+      descricao: '',
+      checklistTexto: '',
+      destaque: false
+    });
+    this.erroApi = '';
   }
 }

@@ -3,20 +3,20 @@
     <div class="form-banner">
       <div>
         <h1>{{ modoEdicao ? 'Editar Registro do Catálogo' : 'Cadastrar Novo Equipamento ou Trilha' }}</h1>
-        <p>Manipulação de dados via SemcService (Mock Objects em memória) utilizando Two-Way Data Binding.</p>
+        <p>Formulário Reativo com Validators e persistência via HttpClient + JSON-Server.</p>
       </div>
       <span class="admin-badge">🔒 GERENCIAMENTO SEMC</span>
     </div>
 
-    <div class="error-box" *ngIf="mensagemErro">
-      {{ mensagemErro }}
+    <div class="alert-error-api" style="margin: 20px 30px 0" *ngIf="erroApi">
+      {{ erroApi }}
     </div>
 
-    <form (ngSubmit)="salvarFormulario()" class="semc-form">
+    <form [formGroup]="formItem" (ngSubmit)="salvarFormulario()" class="semc-form">
       <div class="form-row-3">
         <div class="form-group">
           <label>Tipo de Registro *</label>
-          <select class="form-control" [(ngModel)]="tipo" name="tipo">
+          <select class="form-control" formControlName="tipo">
             <option value="Equipamento">Equipamento de Sobrevivência / Camping</option>
             <option value="Trilha">Rota de Trilha / Expedição</option>
           </select>
@@ -24,12 +24,21 @@
 
         <div class="form-group">
           <label>Código Identificador *</label>
-          <input type="text" class="form-control" [(ngModel)]="codigo" name="codigo" placeholder="Ex: EQP-055 ou TRL-112" />
+          <input
+            type="text"
+            class="form-control"
+            formControlName="codigo"
+            [class.is-invalid]="campoInvalido('codigo')"
+            [class.is-valid]="campoValido('codigo')"
+          />
+          <small class="error-msg" *ngIf="campoInvalido('codigo')">
+            Código obrigatório (mínimo de 4 caracteres, ex: EQP-055).
+          </small>
         </div>
 
         <div class="form-group">
           <label>Status Atual *</label>
-          <select class="form-control" [(ngModel)]="status" name="status">
+          <select class="form-control" formControlName="status">
             <option value="Disponível">Disponível no Inventário</option>
             <option value="Em Campo">Em Campo / Expedição</option>
             <option value="Planejado">Planejado</option>
@@ -44,10 +53,15 @@
           <input
             type="text"
             class="form-control"
-            [(ngModel)]="nome"
-            name="nome"
+            formControlName="nome"
             placeholder="Ex: Lanterna Tática Recarregável 1200 Lumens SEMC"
+            [class.is-invalid]="campoInvalido('nome')"
+            [class.is-valid]="campoValido('nome')"
           />
+          <small class="error-msg" *ngIf="campoInvalido('nome')">
+            Informe o nome com pelo menos 3 caracteres.
+          </small>
+          <small class="valid-msg" *ngIf="campoValido('nome')">Nome válido.</small>
         </div>
 
         <div class="form-group">
@@ -55,22 +69,34 @@
           <input
             type="text"
             class="form-control"
-            [(ngModel)]="categoria"
-            name="categoria"
-            placeholder="Ex: Iluminação & Sinalização, Abrigo, Cutelaria..."
+            formControlName="categoria"
+            [class.is-invalid]="campoInvalido('categoria')"
+            [class.is-valid]="campoValido('categoria')"
           />
+          <small class="error-msg" *ngIf="campoInvalido('categoria')">
+            Categoria é obrigatória.
+          </small>
         </div>
       </div>
 
       <div class="form-row-3">
         <div class="form-group">
           <label>Peso Estimado (em gramas) *</label>
-          <input type="number" class="form-control" [(ngModel)]="pesoGramas" name="pesoGramas" />
+          <input
+            type="number"
+            class="form-control"
+            formControlName="pesoGramas"
+            [class.is-invalid]="campoInvalido('pesoGramas')"
+            [class.is-valid]="campoValido('pesoGramas')"
+          />
+          <small class="error-msg" *ngIf="campoInvalido('pesoGramas')">
+            Peso deve ser um número maior ou igual a 1 grama.
+          </small>
         </div>
 
         <div class="form-group">
           <label>Nível de Criticidade / Dificuldade *</label>
-          <select class="form-control" [(ngModel)]="dificuldadeOuCriticidade" name="dificuldadeOuCriticidade">
+          <select class="form-control" formControlName="dificuldadeOuCriticidade">
             <option value="Essencial (EDC)">Essencial (EDC)</option>
             <option value="Leve">Leve</option>
             <option value="Moderada">Moderada</option>
@@ -80,7 +106,16 @@
 
         <div class="form-group">
           <label>Responsável ou Localização *</label>
-          <input type="text" class="form-control" [(ngModel)]="localOuResponsavel" name="localOuResponsavel" />
+          <input
+            type="text"
+            class="form-control"
+            formControlName="localOuResponsavel"
+            [class.is-invalid]="campoInvalido('localOuResponsavel')"
+            [class.is-valid]="campoValido('localOuResponsavel')"
+          />
+          <small class="error-msg" *ngIf="campoInvalido('localOuResponsavel')">
+            Informe o responsável ou local.
+          </small>
         </div>
       </div>
 
@@ -89,30 +124,38 @@
         <textarea
           rows="3"
           class="form-control"
-          [(ngModel)]="descricao"
-          name="descricao"
+          formControlName="descricao"
           placeholder="Descreva os materiais, resistência à água, autonomia ou detalhes da rota..."
+          [class.is-invalid]="campoInvalido('descricao')"
+          [class.is-valid]="campoValido('descricao')"
         ></textarea>
+        <small class="error-msg" *ngIf="campoInvalido('descricao')">
+          A descrição deve ter no mínimo 10 caracteres.
+        </small>
       </div>
 
       <div class="form-group">
-        <label>Checklist Associado (digite 1 item por linha)</label>
+        <label>Checklist Associado (1 item por linha) *</label>
         <textarea
           rows="4"
           class="form-control"
-          [(ngModel)]="checklistTexto"
-          name="checklistTexto"
+          formControlName="checklistTexto"
+          [class.is-invalid]="campoInvalido('checklistTexto')"
+          [class.is-valid]="campoValido('checklistTexto')"
         ></textarea>
+        <small class="error-msg" *ngIf="campoInvalido('checklistTexto')">
+          Adicione ao menos um item de checklist.
+        </small>
       </div>
 
       <div class="checkbox-row">
-        <input type="checkbox" id="destaqueCheck" [(ngModel)]="destaque" name="destaque" />
+        <input type="checkbox" id="destaqueCheck" formControlName="destaque" />
         <label for="destaqueCheck">Exibir este registro nos destaques da Página Inicial (Home)</label>
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary">
-          {{ modoEdicao ? 'Salvar Alterações (Atualizar)' : 'Salvar no Catálogo SEMC' }}
+        <button type="submit" class="btn btn-primary" [disabled]="formItem.invalid || enviando">
+          {{ enviando ? 'Enviando...' : (modoEdicao ? 'Salvar Alterações (PUT)' : 'Salvar no Catálogo (POST)') }}
         </button>
         <button type="button" class="btn btn-outline" (click)="limparCampos()">
           Limpar Campos

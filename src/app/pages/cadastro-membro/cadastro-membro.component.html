@@ -1,0 +1,125 @@
+<div class="container">
+    <div class="card" style="margin-bottom: 24px;">
+      <h1>Cadastro de Membros SEMC & Consulta ViaCEP</h1>
+      <p style="color: #475569; margin-bottom: 16px;">
+        Formulário reativo com validação estrita, integração com a API ViaCEP (endereço + DDD) e persistência em JSON-Server.
+      </p>
+  
+      <div class="alert-error-api" *ngIf="mensagemErro">{{ mensagemErro }}</div>
+      <div class="alert-success-api" *ngIf="mensagemSucesso">{{ mensagemSucesso }}</div>
+  
+      <form [formGroup]="formMembro" (ngSubmit)="salvarMembro()">
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" class="form-control" formControlName="nome" [class.is-invalid]="campoInvalido('nome')" />
+            <small class="error-msg" *ngIf="campoInvalido('nome')">Nome obrigatório (mínimo 3 letras).</small>
+          </div>
+  
+          <div class="form-group">
+            <label>E-mail *</label>
+            <input type="email" class="form-control" formControlName="email" [class.is-invalid]="campoInvalido('email')" />
+            <small class="error-msg" *ngIf="campoInvalido('email')">Informe um e-mail válido.</small>
+          </div>
+  
+          <div class="form-group">
+            <label>Senha *</label>
+            <input type="password" class="form-control" formControlName="senha" [class.is-invalid]="campoInvalido('senha')" />
+            <small class="error-msg" *ngIf="campoInvalido('senha')">Senha obrigatória (mínimo 6 caracteres).</small>
+          </div>
+        </div>
+  
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>CEP (ViaCEP) *</label>
+            <div style="display: flex; gap: 8px;">
+              <input
+                type="text"
+                class="form-control"
+                formControlName="cep"
+                placeholder="30130-110"
+                [class.is-invalid]="campoInvalido('cep')"
+              />
+              <button type="button" class="btn btn-secondary" (click)="consultarCep()" [disabled]="buscandoCep">
+                {{ buscandoCep ? '...' : 'Buscar' }}
+              </button>
+            </div>
+            <small class="error-msg" *ngIf="campoInvalido('cep')">CEP inválido (use 8 dígitos, ex: 30130-110).</small>
+          </div>
+  
+          <div class="form-group">
+            <label>DDD *</label>
+            <input type="text" class="form-control" formControlName="ddd" placeholder="31" [class.is-invalid]="campoInvalido('ddd')" />
+            <small class="error-msg" *ngIf="campoInvalido('ddd')">DDD obrigatório (2 dígitos).</small>
+          </div>
+  
+          <div class="form-group">
+            <label>Telefone *</label>
+            <input type="text" class="form-control" formControlName="telefone" placeholder="99999-0000" [class.is-invalid]="campoInvalido('telefone')" />
+            <small class="error-msg" *ngIf="campoInvalido('telefone')">Telefone obrigatório.</small>
+          </div>
+        </div>
+  
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Logradouro *</label>
+            <input type="text" class="form-control" formControlName="logradouro" [class.is-invalid]="campoInvalido('logradouro')" />
+            <small class="error-msg" *ngIf="campoInvalido('logradouro')">Logradouro obrigatório.</small>
+          </div>
+  
+          <div class="form-group">
+            <label>Bairro *</label>
+            <input type="text" class="form-control" formControlName="bairro" [class.is-invalid]="campoInvalido('bairro')" />
+            <small class="error-msg" *ngIf="campoInvalido('bairro')">Bairro obrigatório.</small>
+          </div>
+  
+          <div class="form-group">
+            <label>Cidade / UF *</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" class="form-control" formControlName="cidade" placeholder="Cidade" [class.is-invalid]="campoInvalido('cidade')" />
+              <input type="text" class="form-control" style="max-width: 75px;" formControlName="uf" placeholder="UF" [class.is-invalid]="campoInvalido('uf')" />
+            </div>
+            <small class="error-msg" *ngIf="campoInvalido('cidade') || campoInvalido('uf')">Cidade e UF (2 letras) obrigatórios.</small>
+          </div>
+        </div>
+  
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Nível de Experiência em Campo</label>
+            <select class="form-control" formControlName="nivelExperiencia">
+              <option value="Iniciante">Iniciante</option>
+              <option value="Intermediário">Intermediário</option>
+              <option value="Avançado">Avançado</option>
+            </select>
+          </div>
+  
+          <div class="form-group">
+            <label>Perfil no Sistema</label>
+            <select class="form-control" formControlName="perfil">
+              <option value="Membro">Membro</option>
+              <option value="Administrador">Administrador</option>
+            </select>
+          </div>
+        </div>
+  
+        <button type="submit" class="btn btn-primary" [disabled]="formMembro.invalid">
+          Cadastrar Membro
+        </button>
+      </form>
+    </div>
+  
+    <div class="card">
+      <h2>Membros Registrados ({{ membros.length }})</h2>
+      <div style="margin-top: 12px; display: grid; gap: 10px;">
+        <div *ngFor="let m of membros" style="padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <strong>{{ m.nome }}</strong> ({{ m.perfil }} — {{ m.nivelExperiencia }})<br />
+            <small style="color: #475569;">{{ m.email }} | ({{ m.ddd }}) {{ m.telefone }} | {{ m.cidade }}/{{ m.uf }}</small>
+          </div>
+          <button type="button" class="btn btn-danger btn-sm" (click)="removerMembro(m.id, m.nome)" *ngIf="m.id !== 1">
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,38 @@
+<div class="container" style="max-width: 480px;">
+    <div class="card">
+      <h1>Acesso SEMC BaseCamp</h1>
+      <p style="color: #475569; margin-bottom: 16px;">
+        Autenticação via formulário reativo consultando o endpoint <code>/membros</code> da Web API.
+      </p>
+  
+      <div class="alert-error-api" *ngIf="erroLogin">{{ erroLogin }}</div>
+  
+      <form [formGroup]="formLogin" (ngSubmit)="entrar()">
+        <div class="form-group">
+          <label>E-mail *</label>
+          <input type="email" class="form-control" formControlName="email" [class.is-invalid]="campoInvalido('email')" />
+          <small class="error-msg" *ngIf="campoInvalido('email')">Informe um e-mail válido.</small>
+        </div>
+  
+        <div class="form-group">
+          <label>Senha *</label>
+          <input
+            type="password"
+            class="form-control"
+            formControlName="senha"
+            placeholder="Ex: semc2026"
+            [class.is-invalid]="campoInvalido('senha')"
+          />
+          <small class="error-msg" *ngIf="campoInvalido('senha')">Senha obrigatória (mínimo 4 caracteres).</small>
+        </div>
+  
+        <button type="submit" class="btn btn-primary" style="width: 100%;" [disabled]="formLogin.invalid || carregando">
+          {{ carregando ? 'Autenticando...' : 'Entrar' }}
+        </button>
+      </form>
+  
+      <p style="margin-top: 14px; font-size: 13px; color: #475569;">
+        Ainda não tem conta? <a routerLink="/membros" style="color: #3a5a40; font-weight: 700;">Cadastre-se aqui</a>.
+      </p>
+    </div>
+  </div>

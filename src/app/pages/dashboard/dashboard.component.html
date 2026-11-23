@@ -1,0 +1,37 @@
+<div class="container">
+    <h1>Relatório & Dashboard Operacional SEMC</h1>
+    <p style="color: #475569; margin-bottom: 20px;">
+      Métricas calculadas dinamicamente a partir dos dados armazenados no JSON-Server via HttpClient.
+    </p>
+  
+    <div class="alert-error-api" *ngIf="erroApi">{{ erroApi }}</div>
+  
+    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+      <div class="card">
+        <div style="font-size: 24px; font-weight: 800;">{{ resumo.totalEquipamentos }}</div>
+        <div style="color: #64748b; font-size: 13px;">Equipamentos</div>
+      </div>
+      <div class="card">
+        <div style="font-size: 24px; font-weight: 800;">{{ resumo.totalTrilhas }}</div>
+        <div style="color: #64748b; font-size: 13px;">Trilhas Mapeadas</div>
+      </div>
+      <div class="card">
+        <div style="font-size: 24px; font-weight: 800;">{{ resumo.pesoTotalKitKg }} kg</div>
+        <div style="color: #64748b; font-size: 13px;">Peso Total dos Equipamentos</div>
+      </div>
+      <div class="card">
+        <div style="font-size: 24px; font-weight: 800;">{{ totalMembros }}</div>
+        <div style="color: #64748b; font-size: 13px;">Membros Cadastrados</div>
+      </div>
+    </div>
+  
+    <div class="card">
+      <h2>Distribuição por Nível / Criticidade</h2>
+      <div style="margin-top: 12px; display: grid; gap: 10px;">
+        <div *ngFor="let grupo of porDificuldade" style="display: flex; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border-radius: 8px;">
+          <strong>{{ grupo.nivel }}</strong>
+          <span class="badge badge-equipamento">{{ grupo.quantidade }} registro(s)</span>
+        </div>
+      </div>
+    </div>
+  </div>
