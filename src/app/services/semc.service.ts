@@ -1,84 +1,72 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ItemSemc } from '../models/item-semc.model';
-import { ITENS_SEMC_MOCK } from '../mocks/itens-semc.mock';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SemcService {
-  private itens: ItemSemc[] = [...ITENS_SEMC_MOCK];
+  private readonly apiUrl = 'http://localhost:3000/itens';
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
-  // Listar todos os registos (Equipamentos e Trilhas)
-  listarTodos(): ItemSemc[] {
-    return [...this.itens];
+  listarTodos(): Observable<ItemSemc[]> {
+    return this.http.get<ItemSemc[]>(this.apiUrl);
   }
 
-  // Listar apenas itens em destaque para a página Home
-  listarDestaques(): ItemSemc[] {
-    return this.itens.filter(item => item.destaque);
+  listarDestaques(): Observable<ItemSemc[]> {
+    return this.http.get<ItemSemc[]>(`${this.apiUrl}?destaque=true`);
   }
 
-  // Procurar item específico por ID (Componente de Detalhe / Edição)
-  buscarPorId(id: number): ItemSemc | undefined {
-    const encontrado = this.itens.find(item => item.id === id);
-    return encontrado ? { ...encontrado, checklist: [...encontrado.checklist] } : undefined;
+  buscarPorId(id: number): Observable<ItemSemc> {
+    return this.http.get<ItemSemc>(`${this.apiUrl}/${id}`);
   }
 
-  // Pesquisar e filtrar itens por termo de texto e tipo/categoria
-  pesquisar(termo: string, filtroTipo: string): ItemSemc[] {
+  pesquisar(termo: string, filtroTipo: string): Observable<ItemSemc[]> {
     const termoLimpo = termo.trim().toLowerCase();
-    return this.itens.filter(item => {
-      const correspondeTipo =
-        filtroTipo === 'Todos' ||
-        item.tipo === filtroTipo ||
-        item.categoria.toLowerCase().includes(filtroTipo.toLowerCase());
+    return this.listarTodos().pipe(
+      map(itens =>
+        itens.filter(item => {
+          const correspondeTipo =
+            filtroTipo === 'Todos' ||
+            item.tipo === filtroTipo ||
+            item.categoria.toLowerCase().includes(filtroTipo.toLowerCase());
 
-      const correspondeTermo =
-        !termoLimpo ||
-        item.nome.toLowerCase().includes(termoLimpo) ||
-        item.codigo.toLowerCase().includes(termoLimpo) ||
-        item.categoria.toLowerCase().includes(termoLimpo) ||
-        item.localOuResponsavel.toLowerCase().includes(termoLimpo);
+          const correspondeTermo =
+            !termoLimpo ||
+            item.nome.toLowerCase().includes(termoLimpo) ||
+            item.codigo.toLowerCase().includes(termoLimpo) ||
+            item.categoria.toLowerCase().includes(termoLimpo) ||
+            item.localOuResponsavel.toLowerCase().includes(termoLimpo);
 
-      return correspondeTipo && correspondeTermo;
-    });
+          return correspondeTipo && correspondeTermo;
+        })
+      )
+    );
   }
 
-  // Registar novo Equipamento ou Trilha
-  cadastrar(novoItem: Omit<ItemSemc, 'id'>): ItemSemc {
-    const novoId = this.itens.length > 0 ? Math.max(...this.itens.map(i => i.id)) + 1 : 1;
-    const itemCriado: ItemSemc = {
-      ...novoItem,
-      id: novoId
-    };
-    this.itens.unshift(itemCriado);
-    return itemCriado;
+  cadastrar(novoItem: Omit<ItemSemc, 'id'>): Observable<ItemSemc> {
+    return this.http.post<ItemSemc>(this.apiUrl, novoItem);
   }
 
-  // Atualizar Equipamento ou Trilha existente
-  atualizar(id: number, itemAtualizado: Omit<ItemSemc, 'id'>): boolean {
-    const index = this.itens.findIndex(item => item.id === id);
-    if (index !== -1) {
-      this.itens[index] = { ...itemAtualizado, id };
-      return true;
-    }
-    return false;
+  atualizar(id: number, itemAtualizado: Omit<ItemSemc, 'id'>): Observable<ItemSemc> {
+    return this.http.put<ItemSemc>(`${this.apiUrl}/${id}`, { ...itemAtualizado, id });
   }
 
-  // Excluir registo por ID
-  excluir(id: number): boolean {
-    const tamanhoInicial = this.itens.length;
-    this.itens = this.itens.filter(item => item.id !== id);
-    return this.itens.length < tamanhoInicial;
+  excluir(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // Obter estatísticas resumidas para os indicadores do sistema
-  obterResumo(): { totalEquipamentos: number; totalTrilhas: number; pesoTotalKitKg: number } {
-    const equipamentos = this.itens.filter(i => i.tipo === 'Equipamento');
-    const trilhas = this.itens.filter(i => i.tipo === 'Trilha');
-    const somaPesoEquipamentos = equipamentos.reduce((acc, cur) => acc + cur.pesoGramas, 0);
+  calcularResumo(itens: ItemSemc[]): {
+    totalEquipamentos: number;
+    totalTrilhas: number;
+    pesoTotalKitKg: number;
+  } {
+    const equipamentos = itens.filter(i => i.tipo === 'Equipamento');
+    const trilhas = itens.filter(i => i.tipo === 'Trilha');
+    const somaPesoEquipamentos = equipamentos.reduce((acc, cur) => acc + Number(cur.pesoGramas || 0), 0);
 
     return {
       totalEquipamentos: equipamentos.length,
