@@ -1,4 +1,4 @@
-<header class="navbar">
+﻿<header class="navbar">
   <div class="navbar-container">
     <a routerLink="/home" class="brand">
       <div class="brand-badge">SEMC</div>
@@ -11,13 +11,23 @@
     <nav class="nav-links">
       <a routerLink="/home" routerLinkActive="active">Início</a>
       <a routerLink="/sobre-nos" routerLinkActive="active">Sobre Nós</a>
-      <a routerLink="/catalogo" routerLinkActive="active">Catálogo & Trilhas</a>
-      <a routerLink="/gerenciar" routerLinkActive="active">Gerenciar / Cadastrar</a>
+      <a routerLink="/catalogo" routerLinkActive="active">Catálogo</a>
+      <a routerLink="/gerenciar" routerLinkActive="active">Cadastrar Item</a>
+      <a routerLink="/dashboard" routerLinkActive="active">Relatório</a>
+      <a routerLink="/membros" routerLinkActive="active">Membros</a>
     </nav>
 
-    <div class="user-pill">
-      <span class="status-dot"></span>
-      <span>Coord. Marcelo A.</span>
+    <div class="user-area">
+      <ng-container *ngIf="membroLogado; else visitanteTpl">
+        <div class="user-pill">
+          <span class="status-dot"></span>
+          <span>{{ membroLogado.nome.split(' ')[0] }}</span>
+        </div>
+        <button type="button" class="btn-logout" (click)="sair()">Sair</button>
+      </ng-container>
+      <ng-template #visitanteTpl>
+        <a routerLink="/login" routerLinkActive="active" class="btn-login">Entrar</a>
+      </ng-template>
     </div>
   </div>
 </header>
@@ -29,6 +39,6 @@
 <footer class="footer">
   <div class="footer-container">
     <span>© 2026 SEMC BaseCamp — Grupo SEMC (Sobrevivencialismo, Viagens, Acampamentos & Trilhas)</span>
-    <span>Desenvolvido em Angular por Marcelo Alexandrino de Souza Junior — FUMEC</span>
+    <span>Desenvolvido em Angular + JSON-Server por Marcelo Alexandrino de Souza Junior — FUMEC</span>
   </div>
 </footer>
